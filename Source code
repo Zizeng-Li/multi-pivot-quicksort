@@ -1,0 +1,127 @@
+import random
+import math
+import timeit
+
+def quicksort_inplace(nums,start,end):
+            if end < start:
+                return None
+            p = partition(nums, start, end)
+            quicksort_inplace(nums,start,p-1)
+            quicksort_inplace(nums,p+1,end)
+
+def partition(nums,left, right):
+            if left > right:
+                return None
+            
+            pivot_index = left
+            pivot=nums[left]
+            
+            while True:
+                while left < right and nums[right] >=pivot:
+                    right -=1
+                while left < right and nums[left] <=pivot:
+                    left +=1
+                if left < right:
+                    nums[left],nums[right] = nums[right],nums[left]
+                else:
+                    break
+            nums[right],nums[pivot_index] = nums[pivot_index],nums[right]
+            return right
+
+def quicksort_copy(L):
+    if len(L) < 2:
+        return L
+    pivot = L[0]
+    left, right = [], []
+    for num in L[1:]:
+        if num < pivot:
+            left.append(num)
+        else:
+            right.append(num)
+    return quicksort_copy(left) + [pivot] + quicksort_copy(right)
+
+def dual_pivot_quicksort(L):
+    if len(L) < 2:
+        return L
+    firstpivot = L[0]
+    secondpivot = L[1]
+    if firstpivot > secondpivot:
+        firstpivot, secondpivot = secondpivot, firstpivot
+    left, right,middle = [], [], []
+    for num in L[2:]:
+        if num < firstpivot:
+            left.append(num)
+        elif num < secondpivot and num >= firstpivot:
+            middle.append(num)
+        else:
+            right.append(num)
+    return dual_pivot_quicksort(left) + [firstpivot] + \
+        dual_pivot_quicksort(middle) + [secondpivot] + \
+            dual_pivot_quicksort(right)
+
+def tri_pivot_quicksort(L):
+    if len(L) < 3:
+        return dual_pivot_quicksort(L)
+    
+    pivotList = [L[0],L[1],L[2]]
+    pivotList = quicksort_copy(pivotList)
+    firstpivot = pivotList[0]
+    secondpivot = pivotList[1]
+    thirdpivot = pivotList[2]
+
+    left, right,leftmiddle, rightmiddle = [], [], [], []
+    for num in L[3:]:
+        if num < firstpivot:
+            left.append(num)
+        elif num < secondpivot and num >= firstpivot:
+            leftmiddle.append(num)
+        elif num < thirdpivot and num >= secondpivot:
+            rightmiddle.append(num)
+        else:
+            right.append(num)
+    return tri_pivot_quicksort(left) + [firstpivot] + \
+        tri_pivot_quicksort(leftmiddle) + [secondpivot] + \
+            tri_pivot_quicksort(rightmiddle) + [thirdpivot] + \
+                tri_pivot_quicksort(right)
+
+def quad_pivot_quicksort(L):
+    if len(L) < 4:
+        return tri_pivot_quicksort(L)
+
+    pivotList = [L[0],L[1],L[2],L[3]]
+    pivotList = quicksort_copy(pivotList)
+    firstpivot = pivotList[0]
+    secondpivot = pivotList[1]
+    thirdpivot = pivotList[2]
+    fourthpivot = pivotList[3]
+    
+    left, right,leftmiddle, rightmiddle, middle = [], [], [], [], []
+    for num in L[4:]:
+        if num < firstpivot:
+            left.append(num)
+        elif num < secondpivot and num >= firstpivot:
+            leftmiddle.append(num)
+        elif num < thirdpivot and num >= secondpivot:
+            middle.append(num)
+        elif num < fourthpivot and num >= thirdpivot:
+            rightmiddle.append(num)
+        else:
+            right.append(num)
+    return quad_pivot_quicksort(left) + [firstpivot] + \
+        quad_pivot_quicksort(leftmiddle) + [secondpivot] + \
+            quad_pivot_quicksort(middle) + [thirdpivot] + \
+                quad_pivot_quicksort(rightmiddle) + [fourthpivot] + \
+                    quad_pivot_quicksort(right)
+
+def final_sort(L):
+    if len(L) <= 14:
+        for i in range(1, len(L)):
+            key = L[i]
+            j = i - 1
+            while j >= 0 and key < L[j]:
+                L[j + 1] = L[j]
+                j -= 1
+            L[j + 1] = key
+        return L
+    else:
+        return dual_pivot_quicksort(L)
